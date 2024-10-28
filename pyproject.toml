@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "folha-pgto"
+version = "0.1.0"
+description = ""
+authors = ["Matheus-Novoa <65021130+Matheus-Novoa@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+thefuzz = "^0.22.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
