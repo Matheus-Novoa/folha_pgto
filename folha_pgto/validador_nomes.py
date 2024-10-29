@@ -1,4 +1,5 @@
 from thefuzz import fuzz
+import unicodedata
 
 
 
@@ -11,46 +12,33 @@ def comparar_nomes(baseAnalise, baseCorreta):
         
         for nomeBaseCorreta in baseCorreta:
             similaridade = fuzz.ratio(nomeBaseAnalise, nomeBaseCorreta)
-            similaridadePartial = fuzz.partial_ratio(nomeBaseAnalise, nomeBaseCorreta)
-            similaridadesBaseAnalise.append((nomeBaseCorreta, (similaridade, similaridadePartial)))
+            similaridadesBaseAnalise.append((nomeBaseCorreta, similaridade))
         
-        doisMaisSimilares = sorted(similaridadesBaseAnalise,
-                               key=lambda item: item[1][0],
+        maisSimilares, segundoMaisSimilar = sorted(similaridadesBaseAnalise,
+                               key=lambda item: item[1],
                                reverse=True)[:2]
         
-        nomeMaisSimilar, _ = sorted(doisMaisSimilares,
-                               key=lambda item: item[1][1],
-                               reverse=True)[0]
+        nomeNormalizado = unicodedata.normalize('NFKD', maisSimilares[0])
+        nomeSemAcento = ''.join(c for c in nomeNormalizado if not unicodedata.combining(c))
+        
+        parNomes[nomeBaseAnalise] = (maisSimilares[0]
+                                     if nomeBaseAnalise.split(' ')[0] in nomeSemAcento
+                                     else segundoMaisSimilar[0])
 
-        # for nome in nomesSimilares:
-        #     similaridade = fuzz.ratio(nomeBaseAnalise, nome)
-        #     if similaridade == maiorSimilaridade:
-        #         nomeMaisSimilar = nome
-
-        parNomes[nomeBaseAnalise] = nomeMaisSimilar
     return parNomes
 
 
 if __name__ == '__main__':
-    # print(fuzz.ratio('ROSELAINE SANTOS', 'JOSELAINE DOS SANTOS'))
-    # print(fuzz.ratio('JOSELAINE DOS SANTOS', 'ROSELAINE SANTOS'))
-    # print(fuzz.ratio('ROSELAINE SANTOS', 'ROSELAINE SANTOS AGUIRRE'))
+    import unicodedata
 
-    # Dicionário de exemplo
-    dicionario = {
-        "a": (10, 5),
-        "b": (15, 8),
-        "c": (7, 3),
-        "d": (20, 9),
-        "e": (25, 4)
-    }
+    def remover_acentuacao(texto):
+        # Normaliza o texto para decompor caracteres acentuados
+        texto_normalizado = unicodedata.normalize('NFKD', texto)
+        # Filtra apenas caracteres ASCII (sem acentuação)
+        texto_sem_acentos = ''.join(c for c in texto_normalizado if not unicodedata.combining(c))
+        return texto_sem_acentos
 
-    # Ordena os itens com base no índice 0 da tupla em ordem decrescente e pega os dois primeiros
-    maiores = sorted(dicionario.items(), key=lambda item: item[1][0], reverse=True)[:2]
-    # maiores = sorted(dicionario.items(), key=lambda item: item[1][0], reverse=True)
-    print(maiores)
-    # Exibe o resultado
-    # for chave, valor in maiores:
-    #     print(f"Chave: {chave}, Valor: {valor}")
-
-
+    # Exemplo de uso
+    texto = "Elisângela"
+    texto_sem_acentos = remover_acentuacao(texto)
+    print(texto_sem_acentos)

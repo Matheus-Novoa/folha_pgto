@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 thefuzz = "^0.22.1"
+pdfplumber = "^0.11.4"
+pandas = "^2.2.3"
+xlrd = "^2.0.1"
 
 
 [build-system]

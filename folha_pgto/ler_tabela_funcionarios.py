@@ -4,10 +4,10 @@ from validador_nomes import comparar_nomes
 import pandas as pd
 
 
-dadosFuncionarios = pd.read_excel('folha_pgto\Empregados.xls', 'dados')
+dadosFuncionarios = pd.read_excel('folha_pgto/Empregados.xls', 'dados')
 dadosFuncionarios['Nome'] = dadosFuncionarios['Nome'].str.strip()
 
-arquivo = "folha_pgto\CCO_000003.pdf"
+arquivo = "folha_pgto/CCO_000003.pdf"
 with pdfplumber.open(arquivo) as pdf:
     textoBruto = ''
     for page in pdf.pages:
@@ -21,7 +21,7 @@ paresNomeValor = {linha[-1].strip():[linha[1]] for linha in dados}
 tabelaDados = pd.DataFrame(paresNomeValor).T.reset_index()
 tabelaDados.columns = ['Nome', 'Valor']
 
-validacao = comparar_nomes(tabelaDados['Nome'].tail(7), dadosFuncionarios['Nome'])
+validacao = comparar_nomes(tabelaDados['Nome'], dadosFuncionarios['Nome'])
 tabelaDados['Nome'] = tabelaDados['Nome'].map(validacao)
 
 tabelaFinal = pd.merge(dadosFuncionarios, tabelaDados, on='Nome')
