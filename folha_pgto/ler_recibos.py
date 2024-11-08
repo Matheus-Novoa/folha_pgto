@@ -4,10 +4,11 @@ import pandas as pd
 from validador_nomes import comparar_nomes
 
 
+
 padraoNome = r"(Nome\s+do\s+Destinatário:)(\s.*)"
 padraoValor = r'(Valor:.*)(R\$\s+)(\d+\,\d+)'
 
-arquivo = 'CCO_000002.pdf'
+arquivo = 'folha_pgto/CCO_000002.pdf'
 with pdfplumber.open(arquivo) as pdf:
     paginas = [page.extract_text() for page in pdf.pages]     
 
@@ -25,7 +26,7 @@ for pagina in paginas:
 dados = {'Nome': nomes, 'Valor': valores}
 tabela = pd.DataFrame(dados)
 
-dadosFuncionarios = pd.read_excel('Empregados.xls', 'dados')
+dadosFuncionarios = pd.read_excel('folha_pgto/Empregados.xls', 'dados')
 
 validacao = comparar_nomes(tabela['Nome'], dadosFuncionarios['Nome'])
 tabela['Nome'] = tabela['Nome'].map(validacao)
@@ -41,3 +42,4 @@ tabelaFinal['Valor'] = (tabelaFinal['Valor'].str
                         .apply(round, args=(2,)))
 
 tabelaDistincao = tabelaFinal.groupby('Centro de Custo')['Valor'].sum()
+print(tabelaDistincao)
