@@ -180,4 +180,5 @@ pyrightconfig.json
 *.pdf
 *.xls
 *xlsx
+*.txt
 
