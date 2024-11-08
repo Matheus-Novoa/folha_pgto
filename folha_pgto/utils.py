@@ -29,7 +29,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
     return parNomes
 
 
-def montar_tabela_final(dadosFuncionarios, folhaPgto):
+def montar_tabela_final(dadosFuncionarios, folhaPgto, pasta):
     tabelaFinal = pd.merge(dadosFuncionarios, folhaPgto, on='Nome')
     tabelaFinal.drop_duplicates(inplace=True)
     tabelaFinal.reset_index(drop=True,inplace=True)
@@ -40,6 +40,6 @@ def montar_tabela_final(dadosFuncionarios, folhaPgto):
                             .astype('float32')
                             .apply(round, args=(2,))
                             )
-    tabelaFinal.to_excel('Resultado.xlsx', index=False)
+    tabelaFinal.to_excel(pasta / 'Resultado.xlsx', index=False)
 
     return tabelaFinal

@@ -34,11 +34,9 @@ tabelaDados = pd.DataFrame(dados)
 validacao = comparar_nomes(tabelaDados['Nome'], dadosFuncionarios['Nome'])
 tabelaDados['Nome'] = tabelaDados['Nome'].map(validacao)
 
-tabelaFinal = montar_tabela_final(dadosFuncionarios, tabelaDados)
+tabelaFinal = montar_tabela_final(dadosFuncionarios, tabelaDados, arquivo.parent)
 
 tabelaDistincao = tabelaFinal.groupby('Centro de Custo')['Valor'].sum()
 
 with open(arquivo.parent / 'resultado.txt', 'w') as f:
     f.write(tabelaDistincao.to_string())
-
-print(tabelaDistincao)
