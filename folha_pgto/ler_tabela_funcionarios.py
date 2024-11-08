@@ -1,13 +1,14 @@
 import pdfplumber
 import re
-from validador_nomes import comparar_nomes
+from utils import comparar_nomes, montar_tabela_final
 import pandas as pd
 
 
+
+arquivo = "folha_pgto/CCO_000003.pdf"
 dadosFuncionarios = pd.read_excel('folha_pgto/Empregados.xls', 'dados')
 dadosFuncionarios['Nome'] = dadosFuncionarios['Nome'].str.strip()
 
-arquivo = "folha_pgto/CCO_000003.pdf"
 with pdfplumber.open(arquivo) as pdf:
     textoBruto = ''
     for page in pdf.pages:
@@ -24,16 +25,7 @@ tabelaDados.columns = ['Nome', 'Valor']
 validacao = comparar_nomes(tabelaDados['Nome'], dadosFuncionarios['Nome'])
 tabelaDados['Nome'] = tabelaDados['Nome'].map(validacao)
 
-tabelaFinal = pd.merge(dadosFuncionarios, tabelaDados, on='Nome')
-tabelaFinal.drop_duplicates(inplace=True)
-tabelaFinal.reset_index(drop=True,inplace=True)
-
-tabelaFinal['Valor'] = (tabelaFinal['Valor']
-                        .str.replace('.','')
-                        .str.replace(',', '.')
-                        .astype('float32')
-                        .apply(round, args=(2,))
-                        )
+tabelaFinal = montar_tabela_final(dadosFuncionarios, tabelaDados)
 
 tabelaDistincao = tabelaFinal.groupby('Centro de Custo')['Valor'].sum()
 print(tabelaDistincao)
