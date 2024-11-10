@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 arquivo = Path(filedialog.askopenfilename())
-dadosFuncionarios = pd.read_excel('folha_pgto/Empregados.xls', 'dados')
+dadosFuncionarios = pd.read_excel('_internal/Empregados.xls', 'dados')
 dadosFuncionarios['Nome'] = dadosFuncionarios['Nome'].str.strip()
 
 try:
