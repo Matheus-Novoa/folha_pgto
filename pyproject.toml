@@ -6,13 +6,14 @@ authors = ["Matheus-Novoa <65021130+Matheus-Novoa@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.12, <3.14"
 thefuzz = "^0.22.1"
 pdfplumber = "^0.11.4"
 pandas = "^2.2.3"
 xlrd = "^2.0.1"
 openpyxl = "^3.1.5"
 customtkinter = "^5.2.2"
+pyinstaller = "^6.11.0"
 
 
 [build-system]
