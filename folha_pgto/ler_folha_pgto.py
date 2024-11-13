@@ -9,10 +9,11 @@ from pathlib import Path
 
 arquivo = Path(filedialog.askopenfilename())
 dadosFuncionarios = pd.read_excel('_internal/Empregados.xls', 'dados')
+# dadosFuncionarios = pd.read_excel('Empregados.xls', 'dados')
 dadosFuncionarios['Nome'] = dadosFuncionarios['Nome'].str.strip()
 
 try:
-    padraoNome = r"(Nome\s+do\s+Destinatário:)(\s.*)"
+    padraoNome = r"(Nome\s+do\s+Destinat[á-ú]rio:)(\s.*)"
     padraoValor = r'(Valor:.*)(R\$\s+)(\d+\,\d+)'
 
     with pdfplumber.open(arquivo) as pdf:
