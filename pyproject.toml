@@ -14,6 +14,7 @@ xlrd = "^2.0.1"
 openpyxl = "^3.1.5"
 customtkinter = "^5.2.2"
 pyinstaller = "^6.11.0"
+pyautogui = "^0.9.54"
 
 
 [build-system]

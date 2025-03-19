@@ -4,6 +4,7 @@ import pandas as pd
 from utils import comparar_nomes, montar_tabela_final
 from customtkinter import filedialog
 from pathlib import Path
+from pyautogui import alert
 
 
 
@@ -19,14 +20,35 @@ try:
     padraoNome = r"(Nome\s+do\s+Destinat[á-ú]rio:)(\s.*)"
     padraoValor = r'(Valor:.*)(R\$\s+)(\d+\,\d+)'
 
+    padraoNome2 = r"(Correntista\s+de\s+Cr[á-ú]dito)(\s.*)"
+    padraoValor2 = r'(Valor.*)(R\$\s+)(\d+\.?\d+\,\d+)'
+
     with pdfplumber.open(arquivo) as pdf:
         paginas = [page.extract_text() for page in pdf.pages]     
 
     nomes = []
     valores = []
-    for pagina in paginas:
+    for n, pagina in enumerate(paginas):
+        if 'Folha de Pagamento' not in pagina:
+            raise
         buscaNome = re.search(padraoNome, pagina)
         buscaValor = re.search(padraoValor, pagina)
+        if not buscaNome:
+            try:
+                buscaNome = re.search(padraoNome2, pagina)
+                buscaValor = re.search(padraoValor2, pagina)
+
+                nomeDestinatario = buscaNome.group(2).strip()
+                print(nomeDestinatario)
+                valor = buscaValor.group(3).strip()
+
+                nomes.append(nomeDestinatario)
+                valores.append(valor)
+                continue
+            except AttributeError:
+                alert(f'Padrão não encontrado na página {n}')
+                continue
+        
         nomeDestinatario = buscaNome.group(2).strip()
         valor = buscaValor.group(3).strip()
 
