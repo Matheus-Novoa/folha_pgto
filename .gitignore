@@ -180,4 +180,4 @@ pyrightconfig.json
 *.pdf
 *.xls
 *xlsx
-#*.txt
+/tests
