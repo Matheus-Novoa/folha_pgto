@@ -65,10 +65,23 @@ except:
         for page in pdf.pages:
             textoBruto += page.extract_text()
 
-    padrao = r"(\d{2}/\d{2}/\d{4}(\(cid:9\))?)\s+(\d{1,3}(?:\.\d{3})*,\d{2})(\(cid:9\)|\s)([^\d(]*)"
+    padrao = re.compile(
+        r"\d{2}/\d{2}/\d{4}\s*(?:\(cid:9\))?\s+"     # Data (não capturada)
+        r"(\d{1,3}(?:[.:]\d{3})*,\d{2})\s*"          # Grupo 1: Valor
+        r"((?:[A-ZÀ-ÿ]+\s*(?:\(cid:9\)\s*)?)+?)"     # Grupo 2: Nome completo
+        r"(?=(?:\(cid:9\))?\s*\d{3,})"               # Lookahead para o código da agência
+    )
     dados = re.findall(padrao, textoBruto)
+    
+    dados_corrigidos = []
+    for valor_bruto, nome_bruto in dados:
+        # Corrige separadores de milhar
+        valor_corrigido = valor_bruto.replace('.', '').replace(':', '')
+        # Remove '(cid:9)' do nome
+        nome_limpo = re.sub(r'\(cid:9\)', '', nome_bruto).strip()
+        dados_corrigidos.append((nome_limpo, valor_corrigido))
 
-    paresNomeValor = {linha[-1].strip():[linha[2]] for linha in dados}
+    paresNomeValor = {linha[0].strip():[linha[1]] for linha in dados_corrigidos}
 
     tabelaDados = pd.DataFrame(paresNomeValor).T.reset_index()
     tabelaDados.columns = ['Nome', 'Valor']
@@ -77,7 +90,6 @@ validacao = comparar_nomes(tabelaDados['Nome'], dadosFuncionarios['Nome'])
 tabelaDados['Nome'] = tabelaDados['Nome'].map(validacao)
 
 tabelaFinal = montar_tabela_final(dadosFuncionarios, tabelaDados, arquivo.parent)
-
 tabelaDistincao = tabelaFinal.groupby('Centro de Custo')['Valor'].sum()
 
 with open(arquivo.parent / 'resultado.txt', 'w') as f:
