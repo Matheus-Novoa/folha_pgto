@@ -1,18 +1,17 @@
 import pdfplumber
 import re
-import pandas as pd
 from utils import comparar_nomes, montar_tabela_final
 from customtkinter import filedialog
 from pathlib import Path
 from pyautogui import alert
-
+import pandas as pd
 
 
 arquivo = Path(filedialog.askopenfilename())
 
 pasta_atual = Path(__file__).parent
 # Procurar pelo arquivo na pasta atual e em subpastas
-arquivo_planilha = next(pasta_atual.rglob('Empregados.xls'), None)
+arquivo_planilha = next(pasta_atual.rglob('Empregados.xlsx'), None)
 dadosFuncionarios = pd.read_excel(arquivo_planilha, 'dados')
 dadosFuncionarios['Nome'] = dadosFuncionarios['Nome'].str.strip()
 
@@ -24,7 +23,10 @@ try:
     padraoValor2 = r'(Valor.*)(R\$\s+)(\d+\.?\d+\,\d+)'
 
     with pdfplumber.open(arquivo) as pdf:
-        paginas = [page.extract_text() for page in pdf.pages]     
+        paginas = [page.extract_text() for page in pdf.pages]
+
+    with open('teste.txt', 'w') as f:
+        f.write('\n'.join(paginas))
 
     nomes = []
     valores = []
