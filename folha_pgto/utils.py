@@ -14,7 +14,7 @@ file_handler = logging.FileHandler('folha_pgto_intempo.log')
 out_handler = logging.StreamHandler()
 out_handler.setLevel(logging.INFO)
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     encoding='utf-8',
     handlers=[file_handler, out_handler]
@@ -32,7 +32,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
     casos_para_IA = []
 
     for nomeBaseAnalise in baseAnalise:
-        logging.info(f'\nAnalisando: {nomeBaseAnalise}')
+        logging.info(f'Analisando: {nomeBaseAnalise}\n')
 
         similaridadesBaseAnalise = []
         norm_analise = normalize_name(nomeBaseAnalise)
@@ -47,7 +47,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
         # Ordena e pega apenas o top 1
         top_candidates = sorted(similaridadesBaseAnalise, key=lambda item: item[1], reverse=True)
         
-        logging.info(f'\nTop candidatos:\n{top_candidates}')
+        logging.info(f'Top candidatos:\n{top_candidates[:5]}\n')
 
         MIN_SIM = 70
         LOW_CONFIDENCE = 85
@@ -57,14 +57,14 @@ def comparar_nomes(baseAnalise, baseCorreta):
         selected = None
         if maisSimilares and (maisSimilares[1] >= MIN_SIM and norm_first_analise in maisSimilares[2]):
             selected = maisSimilares[0]
-            logging.info(f'Nome selecionado pelo algoritmo: {selected}')
+            logging.info(f'Nome selecionado pelo algoritmo: {selected}\n')
     
         else:
-            logging.info('O algoritmo não obteve uma resposta confiável. Delegando para a IA.')
+            logging.info('O algoritmo não obteve uma resposta confiável. Delegando para a IA.\n')
             casos_para_IA.append((nomeBaseAnalise, top_candidates[:10] if top_candidates else []))
 
         if selected and maisSimilares[1] < LOW_CONFIDENCE:
-            logging.info('O algoritmo não obteve uma resposta confiável. Delegando para a IA.')
+            logging.info('O algoritmo não obteve uma resposta confiável. Delegando para a IA.\n')
             casos_para_IA.append((nomeBaseAnalise, top_candidates[:10]))
 
         parNomes[nomeBaseAnalise] = selected
@@ -103,8 +103,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
             response = chain.invoke(inputs)
             ia_match = response.content.strip()
 
-            logging.info(f'Nome selecionado pela IA: {ia_match}')
-            print(f'Nome selecionado pela IA: {ia_match}')
+            logging.info(f'Nome selecionado pela IA: {ia_match}\n')
 
             parNomes[nome_analise] = ia_match if ia_match != 'None' else None
         except Exception as e:
@@ -114,7 +113,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
     return parNomes
 
 
-def montar_tabela_final(dadosFuncionarios, folhaPgto, pasta):
+def montar_tabela_final(dadosFuncionarios, folhaPgto):
     tabelaFinal = pd.merge(dadosFuncionarios, folhaPgto, on='Nome')
     tabelaFinal.drop_duplicates(inplace=True)
     tabelaFinal.reset_index(drop=True,inplace=True)
@@ -125,6 +124,6 @@ def montar_tabela_final(dadosFuncionarios, folhaPgto, pasta):
                             .astype('float32')
                             .apply(round, args=(2,))
                             )
-    tabelaFinal.to_excel(pasta / 'Resultado.xlsx', index=False)
+    tabelaFinal.to_excel('Resultado.xlsx', index=False, sheet_name='lista')
 
     return tabelaFinal

@@ -89,8 +89,8 @@ except:
 validacao = comparar_nomes(tabelaDados['Nome'], dadosFuncionarios['Nome'])
 tabelaDados['Nome'] = tabelaDados['Nome'].map(validacao)
 
-tabelaFinal = montar_tabela_final(dadosFuncionarios, tabelaDados, arquivo.parent)
+tabelaFinal = montar_tabela_final(dadosFuncionarios, tabelaDados)
 tabelaDistincao = tabelaFinal.groupby('Centro de Custo')['Valor'].sum()
 
-with open(arquivo.parent / 'resultado.txt', 'w') as f:
-    f.write(tabelaDistincao.to_string())
+with pd.ExcelWriter('Resultado.xlsx', mode='a', if_sheet_exists='replace') as writer:
+    tabelaDistincao.to_excel(writer, sheet_name='distinção')
