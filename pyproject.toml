@@ -3,7 +3,7 @@ name = "folha-pgto"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12.3"
+requires-python = ">=3.12.3,<4.0.0"
 dependencies = [
     "langchain>=1.0.1",
     "langchain-groq>=1.0.0",
