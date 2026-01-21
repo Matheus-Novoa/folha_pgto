@@ -113,3 +113,7 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
     logger.info(f"Processamento concluído. Tabela final com {len(tabelaFinal)} registros em {len(tabelaDistincao)} centros de custo")
 
     return tabelaFinal, tabelaDistincao
+
+
+if __name__ == "__main__":
+    t = process_pdf(r"C:\Users\novoa\Downloads\CCO_000061.pdf")
