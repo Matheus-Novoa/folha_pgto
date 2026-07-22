@@ -38,7 +38,7 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
         nomes = []
         valores = []
         for n, pagina in enumerate(paginas):
-            if 'Folha de Pagamento' not in pagina:
+            if ('Folha de Pagamento' not in pagina) and ('Transferência de valor entre contas Banrisul' not in pagina):
                 logger.error(f"Página {n+1} não contém o cabeçalho 'Folha de Pagamento'")
                 raise ValueError('O conteudo do arquivo não é uma folha de pagamento')
             buscaNome = re.search(padraoNome, pagina)
@@ -116,4 +116,4 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
 
 
 if __name__ == "__main__":
-    t = process_pdf(r"C:\Users\novoa\Downloads\CCO_000061.pdf")
+    t = process_pdf(r"C:\Users\novoa\Downloads\CCO_000092.pdf")
