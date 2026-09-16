@@ -116,4 +116,4 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
 
 
 if __name__ == "__main__":
-    t = process_pdf(r"C:\Users\novoa\Downloads\CCO_000092.pdf")
+    t = process_pdf(r"C:\Users\novoa\Downloads\Folha Banri 18_08_26.pdf")

@@ -1,7 +1,8 @@
+import os
 import unicodedata
 from dotenv import load_dotenv
 from thefuzz import fuzz  # Se não disponível, use difflib para similaridade
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableSequence
 import pandas as pd
@@ -69,7 +70,12 @@ def comparar_nomes(baseAnalise, baseCorreta):
         parNomes[nomeBaseAnalise] = selected
 
     # Processa casos para IA via LangChain + Groq
-    llm = ChatGroq(temperature=0.1, model_name="llama-3.3-70b-versatile")
+    llm = ChatOpenAI(
+        model="qwen/qwen3.7-flash",
+        temperature=0.1,
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url="https://openrouter.ai/api/v1",
+    )
 
     prompt_template = PromptTemplate(
         input_variables=["nome_analise", "top_candidates", "baseCorreta"],
@@ -107,6 +113,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
             parNomes[nome_analise] = ia_match if ia_match != 'None' else None
         except Exception as e:
             print(f"Erro na chain LangChain/Groq: {e}")
+            logger.error(f"Erro na chain LangChain/Groq: {e}")
             parNomes[nome_analise] = None
 
     return parNomes
