@@ -7,6 +7,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableSequence
 import pandas as pd
 import logging
+from time import sleep
 
 load_dotenv()
 
@@ -71,14 +72,21 @@ def comparar_nomes(baseAnalise, baseCorreta):
 
     # Processa casos para IA via LangChain + Groq
     llm = ChatOpenAI(
-        model="qwen/qwen3.7-flash",
+        model="google/gemini-2.5-flash-lite",
         temperature=0.1,
         api_key=os.getenv("OPENROUTER_API_KEY"),
         base_url="https://openrouter.ai/api/v1",
+        max_retries=4,
+        request_timeout=60,
+        extra_body={
+            "provider": {
+                "allow_fallbacks": True
+            }
+        },
     )
 
     prompt_template = PromptTemplate(
-        input_variables=["nome_analise", "top_candidates", "baseCorreta"],
+        input_variables=["nome_analise", "top_candidates"],
         template="""
         Você é um especialista em matching de nomes. Analise o nome da baseAnalise: "{nome_analise}".
 
@@ -90,8 +98,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
         Regras:
         - Priorize o primeiro nome exato ou similar.
         - Tolere truncamentos (ex.: 'ARAU' = 'ARAUJO') e adicione partes faltantes se plausível.
-        - Escolha o nome da baseCorreta mais próximo semanticamente e unicidade.
-        - Responda APENAS com o nome exato da baseCorreta, sem explicações. Se nenhum match, responda 'None'.
+        - Responda APENAS com o nome exato em {top_candidates}, sem explicações. Se nenhum match, responda 'None'.
         """
     )
 
@@ -105,6 +112,7 @@ def comparar_nomes(baseAnalise, baseCorreta):
             # "baseCorreta": "\n".join(baseCorreta[:5]) + "\n..." if len(baseCorreta) > 5 else "\n".join(baseCorreta)
         }
         try:
+            sleep(1)
             response = chain.invoke(inputs)
             ia_match = response.content.strip()
 

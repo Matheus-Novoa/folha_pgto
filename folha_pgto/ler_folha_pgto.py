@@ -24,8 +24,8 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
 
     try:
         logger.debug("Definindo padrões de expressão regular para extração")
-        padraoNome = r"(Nome\s+do\s+Destinat[á-ú]rio:)(\s.*)"
-        padraoValor = r'(Valor:.*)(R\$\s+)(\d+\,\d+)'
+        padraoNome = r"(N.*?\s+do\s+Desti\w*[:-])(\s.*)"
+        padraoValor = r'(Valor:.*)(R.*?[\$S]\s*)(\d+\,\d+)'
 
         padraoNome2 = r"(Correntista\s+de\s+Cr[á-ú]dito)(\s.*)"
         padraoValor2 = r'(Valor.*)(R\$\s+)(\d+\.?\d+\,\d+)'
@@ -38,9 +38,9 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
         nomes = []
         valores = []
         for n, pagina in enumerate(paginas):
-            # if ('Folha de Pagamento' not in pagina) and ('Transferência de valor entre contas Banrisul' not in pagina):
-            #     logger.error(f"Página {n+1} não contém o cabeçalho 'Folha de Pagamento'")
-            #     raise ValueError('O conteudo do arquivo não é uma folha de pagamento')
+            if (' de Trans' not in pagina):
+                logger.error(f"Página {n+1} não contém o cabeçalho 'Folha de Pagamento'")
+                raise ValueError('O conteudo do arquivo não é uma folha de pagamento')
             buscaNome = re.search(padraoNome, pagina)
             buscaValor = re.search(padraoValor, pagina)
             if not buscaNome:
