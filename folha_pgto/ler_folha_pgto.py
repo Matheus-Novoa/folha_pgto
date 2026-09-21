@@ -23,9 +23,8 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
     logger.info(f"Dados de {len(dadosFuncionarios)} funcionários carregados")
 
     try:
-        logger.debug("Definindo padrões de expressão regular para extração")
         padraoNome = r"(N.*?\s+do\s+Desti\w*[:-])(\s.*)"
-        padraoValor = r'(Valor:.*)(R.*?[\$S]\s*)(\d+\,\d+)'
+        padraoValor = r'(Valor:.*?)(R.*?[\$S][^\d]*?)(\d+\,\d+)'
 
         padraoNome2 = r"(Correntista\s+de\s+Cr[á-ú]dito)(\s.*)"
         padraoValor2 = r'(Valor.*)(R\$\s+)(\d+\.?\d+\,\d+)'
@@ -38,7 +37,7 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
         nomes = []
         valores = []
         for n, pagina in enumerate(paginas):
-            if (' de Trans' not in pagina):
+            if ('Canal:' not in pagina):
                 logger.error(f"Página {n+1} não contém o cabeçalho 'Folha de Pagamento'")
                 raise ValueError('O conteudo do arquivo não é uma folha de pagamento')
             buscaNome = re.search(padraoNome, pagina)
@@ -116,4 +115,4 @@ def process_pdf(pdf_path: Path) -> tuple[pd.DataFrame, pd.Series]:
 
 
 if __name__ == "__main__":
-    t = process_pdf(r"C:\Users\novoa\Downloads\CCO_000100.pdf")
+    t = process_pdf(r"C:\Users\novoa\Downloads\CCO_000101.pdf")
